@@ -19,7 +19,7 @@ This is useful in certain environments. Our motivation is to enhance the functio
 All this project is part of a project of a master, implementing a Honeypot; I am opened to questions and suggestions.
 It is important to note that it is necessary to modify the Linux kernel before adding the kernel module... This is not very flexible... maybe I will implement a new version "ALL-IN-ONE" in a future.
 
-The modifies files are the following:
+The modified files are the following:
 
 	sched.h
 	fork.c
