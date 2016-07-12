@@ -1,0 +1,135 @@
+67,160d66
+< // --- fervagar --- //
+< 
+< // Special Flags //
+< #define HED_FNULL		0	
+< #define HED_FSTREAM_IN		1
+< #define HED_FSTREAM_COMP	(1 << 1)
+< #define HED_FFREE_PENDING	(1 << 2)
+< #define HED_TYPE_SOCKET		(1 << 3)
+< #define HED_TYPE_PIPE		(1 << 4)
+< 
+< /**
+<  * HED_FREE_MSG - Free 1 message node (type: hed_msg)
+<  * @msg_node: pointer to the node
+<  */
+< 
+< #define HED_FREE_MSG(msg_node)		\
+< do{					\
+< 	list_del(&msg_node->list);	\
+< 	kfree(msg_node->buf);		\
+< 	kfree(msg_node);		\
+< }while(0)
+< 
+< /**
+<  * HED_FREE_CHAIN - Free all the messages of a given fd node
+<  * @fd_node: 	pointer to the node (type: hed_fd)
+<  * => *__mptr2 and *__mptr3 acts as loop cursor and temporary storage pointers for hed_msg type.
+<  */
+< 
+< #define HED_FREE_CHAIN(fd_node)								\
+< do{											\
+< 	struct hed_msg *__mptr2, *__mptr3;						\
+< 	if(!list_empty(&fd_node->chain.list)){						\
+< 		list_for_each_entry_safe(__mptr2, __mptr3, &fd_node->chain.list, list){	\
+< 			HED_FREE_MSG(__mptr2);						\
+< 		}									\
+< 	}										\
+< }while(0)
+< 
+< /**
+<  * HED_FREE_FD - Free 1 fd node (type: hed_fd)
+<  * @ptr: 	pointer to the node (type: hed_fd)
+<  */
+< 
+< #define HED_FREE_FD(ptr1)								\
+< do{											\
+< 	HED_FREE_CHAIN(ptr1);								\
+< 	list_del(&ptr1->list);								\
+< 	kfree(ptr1);									\
+< }while(0)
+< 
+< /**
+<  * HED_CANCEL_N_FREE - tries to cancel a delayed work and free the resources
+<  * @ptr: pointer to the node (type: hed_fd)
+<  */
+< 
+< #define HED_CANCEL_N_FREE(ptr0)							\
+< do{										\
+< 	if(ptr0->tbox != NULL){							\
+< 		if(cancel_delayed_work(&ptr0->tbox->dwork)){			\
+< 			kfree(ptr0->tbox);					\
+< 			HED_FREE_FD(ptr0);					\
+< 		}								\
+< 		else{								\
+< 			ptr0->hed_flags |= HED_FFREE_PENDING;			\
+< 		}								\
+< 	}									\
+< 	else{									\
+< 		HED_FREE_FD(ptr0);						\
+< 	}									\
+< }while(0)
+< 
+< /**
+<  * HED_FREE_LISTS - free (if not empty) all the HED lists of the process
+<  * See definition of list_for_each_entry_safe in include/linux/list.h
+<  * @tsk:    	the *struct task_struct of the process
+<  * => *__mptr0 and *__mptr1 acts as loop cursor and temporary storage pointers for hed_fd type.
+<  */
+< 
+< #define HED_FREE_LISTS(tsk)											\
+< do{														\
+< 	struct hed_fd *__mptr0, *__mptr1;									\
+< 	int i;													\
+< 	for(i = 0; i < 2; i++){											\
+< 		if(!list_empty(&tsk->streams[i].list)){								\
+< 			list_for_each_entry_safe(__mptr0, __mptr1, &tsk->streams[i].list, list){		\
+< 				HED_CANCEL_N_FREE(__mptr0);							\
+< 			}											\
+< 		}												\
+< 	}													\
+< }while(0)
+< 
+< // ---------------- //
+< 
+< 
+163c69
+<  
+---
+>  *
+1910,1942d1815
+< 
+< // --- fervagar --- //
+< // [Honeypot] //
+< 
+< 	struct hed_msg {
+< 		char *buf;
+< 		long len;
+< 		struct	list_head list;
+< 	} hed_msg;
+< 
+< 	struct hed_fd {
+< 		unsigned int fd;
+< 		unsigned long len_sum;
+< 		unsigned int hed_flags;
+< 		struct timeout_package *tbox;
+< 		struct hed_msg chain;
+< 		struct list_head list;
+< 	} hed_fd;
+< 	
+< 	// The lists instances
+< 	struct hed_fd streams[2];
+< 
+< 	// The locks
+< 	struct mutex mutex_s[2];
+< 
+< 	// Container for the timeouts //
+< 	struct timeout_package {
+< 		struct delayed_work dwork;
+< 		struct hed_fd *node;
+< 		struct mutex *mutex;
+< 	} timeout_package;
+< // ---------------- //
+< 	
+1951d1823
+< 

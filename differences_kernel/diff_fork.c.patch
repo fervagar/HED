@@ -1,0 +1,11 @@
+1341,1350d1340
+< 
+< 	// --- fervagar --- //
+< 	// init lists //
+< 	INIT_LIST_HEAD(&p->streams[0].list);
+< 	INIT_LIST_HEAD(&p->streams[1].list);
+< 	// init locks //
+< 	mutex_init(&p->mutex_s[0]);
+< 	mutex_init(&p->mutex_s[1]);
+< 	// ---------------- //
+< 

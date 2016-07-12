@@ -1,0 +1,15 @@
+657d656
+< 
+682,691d680
+< 	// --- fervagar --- //
+< 	mutex_lock(&tsk->mutex_s[0]);
+< 	mutex_lock(&tsk->mutex_s[1]);
+< 
+< 	HED_FREE_LISTS(tsk); // macro in include/linux/sched.h
+< 
+< 	mutex_unlock(&tsk->mutex_s[0]);
+< 	mutex_unlock(&tsk->mutex_s[1]);
+< 	// ---------------- //
+< 
+838d826
+< 
