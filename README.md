@@ -4,7 +4,7 @@
 	<img alt="Logo" src="./doc/HEDLogo.png" height="220" width="220">
  </p>
 
-HED is a tool developed for detecting when an "engage" is performed. What is an engage? Well... we are refer as "engage" to the procedure of multiplexing the input & output of a child process through a socket. For example: if you execute the following command:
+HED is a tool developed for detecting when an "engage" is performed. What is an engage? Well... we refer as "engage" to the procedure of multiplexing the input & output of a child process through a socket. For example: if you execute the following command:
 
 	ncat server port -e /bin/bash
 
