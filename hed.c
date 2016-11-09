@@ -22,7 +22,7 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- *	Fernando Vanyo Garcia <fervagar@tuta.io>
+ *	Fernando Vanyo Garcia <fernando@fervagar.com>
  */
 
 #include <linux/module.h>
@@ -34,7 +34,7 @@
 #include <net/sock.h>
 #include <net/inet_common.h>
 
-#define AUTHOR "Fernando Vanyo <fervagar@tuta.io>"
+#define AUTHOR "Fernando Vanyo <fernando@fervagar.com>"
 #define DESC   "HED (HoneyPot Engage Detector). \
 Module for detecting the creation of piped shells through a socket"
 
